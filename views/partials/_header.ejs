@@ -1,5 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Header partial</title>
+  <!--<title>Header partial</title>-->
 </head>
+<body>
+    <% if ( !username ) { %>
+
+      <form method="POST" action="/login"><input type="text" name="username" value="Username"><input type="submit" value="Sign in"></form>
+    <% } else { %>
+      Hello <%= username %> <form method="POST" action="/logout"><input type="submit" value="Log out"></form>
+    <% } %>
+
+
+</body>
+</html>
