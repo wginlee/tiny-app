@@ -1,6 +1,8 @@
 const express = require("express");
 const cookieParser = require('cookie-parser');
 const bodyParser = require("body-parser");
+const bcrypt = require('bcrypt');
+
 
 const PORT = process.env.PORT || 8080; // default port 8080
 
@@ -115,9 +117,14 @@ app.post("/login", (req, res) => {
   let id = searchUserByProperty(users, "email", req.body.email);
 
   if (!id){
-    console.log("no id");
+    console.log("no account associated with that email");
     res.status(403).end();
-  } else if (users[id].password !== req.body.password){
+    return;
+  }
+
+  //hashed password in users
+  if (!bcrypt.compareSync(req.body.password, users[id].password)){
+  // if (users[id].password !== req.body.password){
     console.log("incorrect password");
     res.status(403).end();
   } else {
@@ -159,7 +166,7 @@ app.post("/register", (req, res) => {
     users[id] = {
       id: id,
       email: req.body.email,
-      password: req.body.password,
+      password: bcrypt.hashSync(req.body.password, 10),
       urls: []
     };
       res.cookie('user_id', id);
