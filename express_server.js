@@ -1,5 +1,6 @@
 const express = require("express");
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 
@@ -9,7 +10,10 @@ const PORT = process.env.PORT || 8080; // default port 8080
 const app = express();
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+// app.use(cookieParser());
+app.use(cookieSession({
+  name: 'fhasdflkaj',
+  secret: 'secret'}));
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -31,7 +35,7 @@ app.get("/hello", (req, res) => {
 
 //get and render list of urls
 app.get("/urls", (req, res) => {
-  let userID = req.cookies["user_id"];
+  let userID = req.session.user_id;
 
 
   let userKey = searchUserByProperty(users, "id", userID);
@@ -52,7 +56,7 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
 
-  let userID = req.cookies["user_id"];
+  let userID = req.session.user_id;
   let userKey = searchUserByProperty(users, "id", userID);
   let user = users[userKey]; //user object
 
@@ -75,7 +79,7 @@ app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
 
-  let userID = req.cookies["user_id"];
+  let userID = req.session.user_id;
   if (!userID) {
     res.status(403).end();
   }
@@ -99,7 +103,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   console.log(shortURL);  // debug statement to see POST parameters
   delete urlDatabase[shortURL];
 
-  let userURLs = users[req.cookies["user_id"]].urls;
+  let userURLs = users[req.session.user_id].urls;
   userURLs.splice(userURLs.indexOf(shortURL), 1);
 
   res.redirect("/urls");
@@ -129,13 +133,15 @@ app.post("/login", (req, res) => {
     res.status(403).end();
   } else {
 
-    res.cookie('user_id', id);
+    req.session.user_id = id;
+    // res.cookie('user_id', id);
     res.redirect("/");
   }
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id');
+  req.session = null;
+  // res.clearCookie('user_id');
   res.redirect("/");
 });
 
@@ -169,7 +175,8 @@ app.post("/register", (req, res) => {
       password: bcrypt.hashSync(req.body.password, 10),
       urls: []
     };
-      res.cookie('user_id', id);
+      req.session.user_id = id;
+      // res.cookie('user_id', id);
       res.redirect("/");
   }
 
