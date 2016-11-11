@@ -7,15 +7,24 @@
 </head>
 <body>
     <!-- Add your EJS code here -->
+
+    <% if ( user ){ %>
+
+
     <ul>
 
-      <% for ( url in urls){ %>
-        <li><%= url %> - <%= urls[url] %> <a href ="/urls/<%= url %>">Edit</a><form method="POST" action="/urls/<%= url %>/delete"><input type="submit" value="Delete"></form>
-</li>
+      <% for ( url of user.urls){ %>
+        <li><%= url %> - <%= urls[url] %> <a href ="/urls/<%= url %>">Edit</a><form method="POST" action="/urls/<%= url %>/delete"><input type="submit" value="Delete"></form></li>
 
       <% } %>
     </ul>
-    <form method="POST" action="/urls"><input type="text" name="longURL" value="New URL"></form>
+    <a href = "/urls/new">New URL</a>
+
+    <% } else { %>
+
+    <p> Yer not logged in, fella!</p>
+
+    <% } %>
 
 </body>
 </html>

@@ -13,7 +13,6 @@ var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
-
 var users = {};
 
 app.get("/", (req, res) => {
@@ -28,10 +27,18 @@ app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+//get and render list of urls
 app.get("/urls", (req, res) => {
+  let userID = req.cookies["user_id"];
+
+
+  let userKey = searchUserByProperty(users, "id", userID);
+  let user = users[userKey]; //user object
+
+
   let templateVars = {
-    user_id: req.cookies["user_id"],
-    users: users,
+
+    user: user,
     urls: urlDatabase
   };
   res.render("urls_index", templateVars);
@@ -42,9 +49,13 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+
+  let userID = req.cookies["user_id"];
+  let userKey = searchUserByProperty(users, "id", userID);
+  let user = users[userKey]; //user object
+
   let templateVars = {
-    user_id: req.cookies["user_id"],
-    users: users,
+    user: user,
     shortURL: req.params.id ,
     urls: urlDatabase
   };
@@ -56,21 +67,39 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+//create short url
 app.post("/urls", (req, res) => {
   console.log(req.body.longURL);  // debug statement to see POST parameters
-  urlDatabase[generateRandomString()] = req.body.longURL;
-  res.redirect("/urls");
+  let shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body.longURL;
+
+  let userID = req.cookies["user_id"];
+  if (!userID) {
+    res.status(403).end();
+  }
+  else{
+    users[userID].urls.push(shortURL); //need to be an array of unique shortURLs
+    res.redirect("/urls");
+  }
 });
 
+//edit short url
 app.post("/urls/:shortURL", (req, res) => {
   console.log(req.params.shortURL);  // debug statement to see POST parameters
   urlDatabase[req.params.shortURL] = req.body.longURL;
+  //no need to do anything to the user db
   res.redirect("/urls");
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  console.log(req.params.shortURL);  // debug statement to see POST parameters
-  delete urlDatabase[req.params.shortURL];
+
+  let shortURL = req.params.shortURL;
+  console.log(shortURL);  // debug statement to see POST parameters
+  delete urlDatabase[shortURL];
+
+  let userURLs = users[req.cookies["user_id"]].urls;
+  userURLs.splice(userURLs.indexOf(shortURL), 1);
+
   res.redirect("/urls");
 });
 
@@ -83,7 +112,7 @@ app.post("/login", (req, res) => {
   //need to find user_id (key 'id' from 'users' obj) from email to pass into cookie
   //compare input password with pw on database
 
-  let id = searchUserByEmail(users, req.body.email);
+  let id = searchUserByProperty(users, "email", req.body.email);
 
   if (!id){
     console.log("no id");
@@ -130,7 +159,8 @@ app.post("/register", (req, res) => {
     users[id] = {
       id: id,
       email: req.body.email,
-      password: req.body.password
+      password: req.body.password,
+      urls: []
     };
       res.cookie('user_id', id);
       res.redirect("/");
@@ -149,7 +179,7 @@ function generateRandomString() {
 
 //find the user id from a given email and return it as a string, return null if user object not correctly formatted or email not found
 
-function searchUserByEmail (obj, query) {
+function searchUserByProperty (obj, prop, query) {
 
   for (var key in obj) {
     var value = obj[key];
@@ -158,11 +188,11 @@ function searchUserByEmail (obj, query) {
       return null;
     }
 
-    if (Object.keys(value).indexOf("email") === -1) {
+    if (Object.keys(value).indexOf(prop) === -1) {
       return null;
     }
 
-    if (value.email === query) {
+    if (value[prop] === query) {
       return key;
     }
 

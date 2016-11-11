@@ -4,14 +4,14 @@
   <!--<title>Header partial</title>-->
 </head>
 <body>
-    <% if ( !user_id ) { %>
+    <% if ( !user ) { %>
 
       <!--<form method="POST" action="/login"><input type="text" name="email" value="Username"><input type="submit" value="Log in"></form>-->
 
       <a href ="/login">Log in</a> <a href ="/register">Sign up</a>
 
     <% } else { %>
-      Hello <%= users[user_id].email %> <form method="POST" action="/logout"><input type="submit" value="Log out"></form>
+      Hello <%= user.email %> <form method="POST" action="/logout"><input type="submit" value="Log out"></form>
     <% } %>
 
 
