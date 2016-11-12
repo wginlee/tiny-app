@@ -5,20 +5,22 @@
   <% include partials/_header %>
 
 </head>
-<body>
-    <!-- Add your EJS code here -->
+<body style="font-size:20px; padding:50px;">
 
     <% if ( user ){ %>
 
 
     <ul>
 
-      <% for ( url of user.urls){ %>
-        <li><%= url %> - <%= urls[url] %> <a href ="/urls/<%= url %>">Edit</a><form method="POST" action="/urls/<%= url %>/delete"><input type="submit" value="Delete"></form></li>
+      <% for ( let url in urls ){ %>
+        <% if (urls[url].user === user.id){ %>
 
+          <li><%= urls[url].shortURL %> - <%= urls[url].longURL %> <a href ="/urls/<%= urls[url].shortURL %>">Edit</a><form method="POST" action="/urls/<%= urls[url].shortURL %>/delete"><input type="submit" value="Delete"></form></li>
+
+        <% } %>
       <% } %>
     </ul>
-    <a href = "/urls/new">New URL</a>
+    <a href = "/urls/new">Create a New Short Link</a>
 
     <% } else { %>
 

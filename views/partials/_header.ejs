@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!--<title>Header partial</title>-->
 </head>
 <body>
     <% if ( !user ) { %>
 
-      <!--<form method="POST" action="/login"><input type="text" name="email" value="Username"><input type="submit" value="Log in"></form>-->
-
       <a href ="/login">Log in</a> <a href ="/register">Sign up</a>
 
     <% } else { %>
-      Hello <%= user.email %> <form method="POST" action="/logout"><input type="submit" value="Log out"></form>
+      Hi <%= user.email %> <a href ="/urls">My links</a> <form method="POST" action="/logout"><input type="submit" value="Log out"></form>
     <% } %>
 
 
