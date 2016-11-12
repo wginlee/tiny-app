@@ -3,7 +3,6 @@ const cookieSession = require('cookie-session');
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 
-
 const PORT = process.env.PORT || 3000; // default port 3000
 
 const app = express();
@@ -212,7 +211,6 @@ app.get("/register", (req, res) => {
     res.redirect("/");
   } else {
     res.status(200).render("register");
-
   }
 
 });
@@ -255,8 +253,8 @@ function generateRandomString() {
   return (100000*Math.random()).toString(36).replace(/[^a-z0-9]+/g, '').substr(0, 6);
 }
 
-//find the user id from a given email and return it as a string, return null if user object not correctly formatted or email not found
-
+//find the user id from a given email and return it as a string,
+//return null if user object not correctly formatted or email not found
 function searchUserByProperty (obj, prop, query) {
 
   for (var key in obj) {
