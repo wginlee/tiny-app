@@ -14,7 +14,7 @@
     <ul>
 
       <% for ( url of user.urls){ %>
-        <li><%= url %> - <%= urls[url] %> <a href ="/urls/<%= url %>">Edit</a><form method="POST" action="/urls/<%= url %>/delete"><input type="submit" value="Delete"></form></li>
+        <li><%= url %> - <%= urls[url] %> <a href ="/urls/<%= url %>">Edit</a><form method="POST" action="/urls/<%= url %>?_method=DELETE"><input type="submit" value="Delete"></form></li>
 
       <% } %>
     </ul>

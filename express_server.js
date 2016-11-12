@@ -3,14 +3,14 @@ const express = require("express");
 const cookieSession = require('cookie-session');
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
-
+const methodOverride = require('method-override');
 
 const PORT = process.env.PORT || 8080; // default port 8080
 
 const app = express();
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
-// app.use(cookieParser());
+app.use(methodOverride('_method'));
 app.use(cookieSession({
   name: 'fhasdflkaj',
   secret: 'secret'}));
@@ -90,14 +90,14 @@ app.post("/urls", (req, res) => {
 });
 
 //edit short url
-app.post("/urls/:shortURL", (req, res) => {
+app.put("/urls/:shortURL", (req, res) => {
   console.log(req.params.shortURL);  // debug statement to see POST parameters
   urlDatabase[req.params.shortURL] = req.body.longURL;
   //no need to do anything to the user db
   res.redirect("/urls");
 });
 
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.delete("/urls/:shortURL", (req, res) => {
 
   let shortURL = req.params.shortURL;
   console.log(shortURL);  // debug statement to see POST parameters
