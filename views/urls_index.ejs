@@ -8,18 +8,16 @@
 <body style="font-size:20px; padding:50px;">
 
     <% if ( user ){ %>
-
-
-    <ul>
+     <ul>
 
       <% for ( let url in urls ){ %>
         <% if (urls[url].user === user.id){ %>
 
-          <li><%= urls[url].shortURL %> - <%= urls[url].longURL %> <a href ="/urls/<%= urls[url].shortURL %>">Edit</a><form method="POST" action="/urls/<%= urls[url].shortURL %>/delete"><input type="submit" value="Delete"></form></li>
+          <li><%= urls[url].shortURL %> - <%= urls[url].longURL %> <a href ="/urls/<%= urls[url].shortURL %>">Edit</a><form method="POST" action="/urls/<%= urls[url].shortURL %>?_method=DELETE"><input type="submit" value="Delete"></form></li>
 
         <% } %>
       <% } %>
-    </ul>
+      </ul>
     <a href = "/urls/new">Create a New Short Link</a>
 
     <% } else { %>

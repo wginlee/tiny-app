@@ -4,10 +4,14 @@ const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 
 const PORT = process.env.PORT || 3000; // default port 3000
+const methodOverride = require('method-override');
+
 
 const app = express();
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(methodOverride('_method'));
 app.use(cookieSession({
   name: 'fhasdflkaj',
   secret: 'secret'}));
@@ -159,12 +163,13 @@ app.post("/urls", (req, res) => {
 });
 
 //edit short url
-app.post("/urls/:shortURL", (req, res) => {
+app.put("/urls/:shortURL", (req, res) => {
   urlDatabase[req.params.shortURL].longURL = req.body.longURL;
+
   res.redirect("/urls");
 });
 
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.delete("/urls/:shortURL", (req, res) => {
 
   let shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
