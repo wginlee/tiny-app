@@ -12,9 +12,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(methodOverride('_method'));
-app.use(cookieSession({
-  name: 'fhasdflkaj',
-  secret: 'secret'}));
+app.use(cookieSession({ name: 'fhasdflkaj', secret: 'secret'})); // suggested indentation change
 
 var urlDatabase = {
   "b2xVn2": {
@@ -37,7 +35,7 @@ var urlDatabase = {
 var users = {};
 
 app.get("/", (req, res) => {
-  let userID = req.session.user_id;
+  let userID = req.session.user_id; // could use const here. userID is not modified inside this function.
 
   if (userID){
     res.redirect("/urls");
@@ -64,7 +62,7 @@ app.get("/urls", (req, res) => {
     return;
   }
 
-  let userKey = searchUserByProperty(users, "id", userID);
+  let userKey = searchUserByProperty(users, "id", userID); // searchUserByProperty - nice touch :)
   let user = users[userKey]; //user object
 
   let templateVars = {
@@ -198,8 +196,7 @@ app.post("/login", (req, res) => {
   if (!bcrypt.compareSync(req.body.password, users[id].password)){
     res.status(401).send("incorrect password");
   } else {
-
-    req.session.user_id = id;
+    req.session.user_id = id; // suggestion: req.session.userId to keep naming consistent
     res.redirect("/");
   }
 });
@@ -224,14 +221,14 @@ app.post("/register", (req, res) => {
 
   if (!req.body.email || !req.body.password){
     res.sendStatus(400).send("email or password missing");
-  }
-  else {
+  } else { // indentation
     var arrayOfEmails = [];
 
     for (let user in users) {
       arrayOfEmails.push( users[user].email );
     };
-
+    // would it be possible to use searchUserByProperty here?
+    // if it returns an id for the given email you know the email is already taken.
     if (arrayOfEmails.indexOf(req.body.email) > -1){
       res.status(400).send("An account associated with this email exists already");
       return;
@@ -243,8 +240,8 @@ app.post("/register", (req, res) => {
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 10)
     };
-      req.session.user_id = id;
-      res.redirect("/");
+    req.session.user_id = id; // fix indentation
+    res.redirect("/");
   }
 
 });
@@ -260,6 +257,11 @@ function generateRandomString() {
 
 //find the user id from a given email and return it as a string,
 //return null if user object not correctly formatted or email not found
+// suggestion: the name of this function suggests that it will return a 'user'.
+// It returns a user id, so it would be nice to rename it to reflect that.
+// Ex: getUserKey
+//
+// Also the propety 'obj' is a bit generic. How about userDatabase?
 function searchUserByProperty (obj, prop, query) {
 
   for (var key in obj) {
@@ -277,6 +279,6 @@ function searchUserByProperty (obj, prop, query) {
       return key;
     }
   }
-  return null;
+  return null; // this will never be reached
 }
 
